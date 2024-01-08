@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Shaka Player DRM Playback</title>
+		<!-- Shaka Player library -->
+		<script
+			src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.1/shaka-player.compiled.js"
+			integrity="sha512-N+ctQP8zL8qXXNmHlw43IMVno5NaWWsEhLs+4mlk1Ffm+BnPxAMDR6hvqitZLR4lfWCyTOax8YOqnVC1vjgCbA=="
+			crossorigin="anonymous"
+			referrerpolicy="no-referrer"
+		></script>
+	</head>
+	<body>
+		<div>
+			<video id="video" width="640" height="360" controls></video>
+		</div>
+
+		<script>
+			document.addEventListener('DOMContentLoaded', function () {
+				// Initialize Shaka Player
+				shaka.polyfill.installAll()
+
+				if (shaka.Player.isBrowserSupported()) {
+					initPlayer()
+				} else {
+					console.error('Browser not supported!')
+				}
+			})
+
+			async function initPlayer() {
+				const videoElement = document.getElementById('video')
+				const manifestUri =
+					'https://dk02otxexwcqe.cloudfront.net/assets01/cpMedia/manual/axinom/dash-iso/overrideKeyIds/202312251800/15s-naturesacpe.mpd' // Update with your manifest URL
+
+				// Create a Shaka Player instance
+				const player = new shaka.Player(videoElement)
+				const id = 123
+				let url = `http://localhost:3000/widevine/${id}`
+				// Configuring DRM
+				player.configure({
+					drm: {
+						servers: {
+							'com.widevine.alpha': url, // Update with your Widevine license URL
+						},
+					},
+				})
+
+				// player.getNetworkingEngine().registerRequestFilter(function (type, request) {
+				// 	if (type === shaka.net.NetworkingEngine.RequestType.LICENSE) {
+				// 		request.headers['X-AxDRM-Message'] = 'token'
+				// 	}
+				// })
+
+				// Load the manifest
+				try {
+					await player.load(manifestUri)
+					console.log('Video loaded successfully!')
+				} catch (error) {
+					console.error('Error loading video:', error)
+				}
+			}
+		</script>
+	</body>
+</html>
