@@ -35,8 +35,6 @@ npm install
 ```javascript
 {
 		"id": "",
-		"name": "",
-		"url": "",
 		"keys": [
 			{
 				"keyId": ""
