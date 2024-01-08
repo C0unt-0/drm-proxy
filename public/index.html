@@ -19,9 +19,7 @@
 
 		<script>
 			document.addEventListener('DOMContentLoaded', function () {
-				// Initialize Shaka Player
 				shaka.polyfill.installAll()
-
 				if (shaka.Player.isBrowserSupported()) {
 					initPlayer()
 				} else {
@@ -31,29 +29,26 @@
 
 			async function initPlayer() {
 				const videoElement = document.getElementById('video')
-				const manifestUri =
-					'https://dk02otxexwcqe.cloudfront.net/assets01/cpMedia/manual/axinom/dash-iso/overrideKeyIds/202312251800/15s-naturesacpe.mpd' // Update with your manifest URL
 
-				// Create a Shaka Player instance
 				const player = new shaka.Player(videoElement)
-				const id = 123
-				let url = `http://localhost:3000/widevine/${id}`
-				// Configuring DRM
+
+				//single key
+				// const id = 'bcbf3075-9da6-478f-bbb6-5ad869179950'
+				// const manifestUri ='https://855a9fc3487ea8637e749dd9.blob.core.windows.net/video-output/MNvMTmUpQxT8wKy4nqcF4d/dash/manifest.mpd'
+
+				//multi-key
+				const id = '3af89f70-7b5e-4ece-b12a-87d550661b5a'
+				let url = `http://127.0.0.1:3000/widevine/${id}`
+				const manifestUri =
+					'https://855a9fc3487ea8637e749dd9.blob.core.windows.net/video-output/6AF6FsgTSeyjQqQdoBp2pt/dash/manifest.mpd'
+
 				player.configure({
 					drm: {
 						servers: {
-							'com.widevine.alpha': url, // Update with your Widevine license URL
+							'com.widevine.alpha': url,
 						},
 					},
 				})
-
-				// player.getNetworkingEngine().registerRequestFilter(function (type, request) {
-				// 	if (type === shaka.net.NetworkingEngine.RequestType.LICENSE) {
-				// 		request.headers['X-AxDRM-Message'] = 'token'
-				// 	}
-				// })
-
-				// Load the manifest
 				try {
 					await player.load(manifestUri)
 					console.log('Video loaded successfully!')

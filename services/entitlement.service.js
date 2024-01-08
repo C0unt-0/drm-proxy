@@ -8,7 +8,7 @@ const NO_SUCH_VIDEO_STATUS_CODE = 400;
 const NEED_TO_KNOW_SECRETS_STATUS_CODE = 500;
 
 const EntitlementService = {
-    getToken: async (VideoId) => {
+    getToken: async (video) => {
         const secrets = secretManagement.getSecrets();
         const communicationKeyAsBuffer = Buffer.from(secrets.communicationKey, 'base64');
 
@@ -26,27 +26,31 @@ const EntitlementService = {
                 allow_persistence: true,
             },
             content_keys_source: {
-                inline: [{
-                    id: VideoId,
-                    usage_policy: 'Policy A',
-                }],
+                inline: [],
             },
             content_key_usage_policies: [
                 {
                     name: 'Policy A',
-                    playready: {
-                        min_device_security_level: 150,
-                        play_enablers: ['786627D8-C2A6-44BE-8F88-08AE255B01A7'],
-                    },
                 },
             ],
         };
+
+        video.keys.forEach(function(key) {
+            // A key ID is always required. In this demo, we'll also reference the previously defined
+            // key usage policy.
+            let inlineKey = {
+                "id": key.keyId,
+                "usage_policy": "Policy A"
+            };
+
+            message.content_keys_source.inline.push(inlineKey);
+        });
 
         const envelope = {
             version: 1,
             com_key_id: secrets.communicationKeyId,
             message,
-            begin_date: validFrom.toISOString(),
+
             expiration_date: validTo.toISOString(),
         };
 

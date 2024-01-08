@@ -1,22 +1,28 @@
 
 
 const videoDatabase = require("../VideoDatabase");
+const fs = require('fs');
 
 
 const CatalogService = {
-    getVideos: async () => {
-        try {
-            const videoList = videoDatabase.getAllVideos().map((video) => ({
-                name: video.name,
-                url: video.url,
-                tags: video.tags,
-            }));
+    getVideoById: async (id) => {
 
 
-            return videoList;
-        } catch (error) {
-            throw error;
-        }
+
+        const filePath = '../videos.json'; // Specify the path to your JSON file
+
+        let videoList = require('../videos.json');
+
+        // Read the file asynchronously
+
+
+        console.log(videoList);
+
+
+
+        const video = videoList.find((item) => item.id === id);
+
+        return video;
     },
 };
 

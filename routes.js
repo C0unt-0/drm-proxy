@@ -4,6 +4,6 @@ const controller = require('./controller');
 
 
 router.post('/fairplay', controller.fairplay);
-router.post('/widevine/:id', controller.widevine);
+router.post('/widevine/:id', controller.setTokenHeader, controller.widevine);
 router.post('/playready', controller.playready);
 module.exports = router;
