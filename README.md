@@ -29,16 +29,10 @@ npm install
 
 ## Configuration
 
-```javascript
-# Rename .env.template to .env and add values
-COMMUNICATION_KEY_ID=
-COMMUNICATION_KEY=
-WIDEVINE_LS_URL=
-FAIRPLAY_LS_URL=
-PLAYREADY_LS_URL=
-PORT=
+- Rename .env.template to .env and add values
+- Add entries to videos.json in below format
 
-# Add entries to videos.json in below format
+```javascript
 {
 		"id": "",
 		"name": "",
@@ -56,18 +50,22 @@ PORT=
 		]
 	}
 
-# Update the manifestUri and id parameters in public > index.html
+```
 
+- Update the `manifestUri` and `id` parameters in public > index.html
+
+```javascript
 const id = '3af89f70-7b5e-4ece-b12a-87d550661b5a'
-				const manifestUri =
-					'https://855a9fc3487ea8637e749dd9.blob.core.windows.net/video-output/6AF6FsgTSeyjQqQdoBp2pt/dash/manifest.mpd'
+const manifestUri =
+	'https://855a9fc3487ea8637e749dd9.blob.core.windows.net/video-output/6AF6FsgTSeyjQqQdoBp2pt/dash/manifest.mpd'
 ```
 
 ## Usage
 
-```bash
-# Run web server
-npm run start
+- Run web server
 
-#navigate to http://localhost:3000 to access the player
+```bash
+npm run start
 ```
+
+- navigate to http://localhost:3000 to access the player.
