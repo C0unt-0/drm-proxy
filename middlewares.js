@@ -1,59 +1,45 @@
 const EntitlementService = require('./services/entitlement.service.js');
 const CatalogService = require('./services/catalog.service.js');
 const { createProxyMiddleware, responseInterceptor } = require('http-proxy-middleware');
+const config = require('./utils/config');
 
-
-
-const Controller = {
-    fairplay: async (req, res) => {
-        try {
-            const videoList = await CatalogService.getVideoById();
-            console.log(request.body);
-
-        } catch (error) {
-            console.error(error);
-            res.status(500).send('Internal Server Error');
+const ProxyHelpers = {
+    onProxyRes: (proxyRes, req, res) => {
+        if (proxyRes.statusCode != 200) {
+            console.log(proxyRes.headers);
+            res.sendStatus(500);
+        } else {
+            console.log(proxyRes.headers['x-axdrm-message']);
+            delete proxyRes.headers['x-axdrm-message'];
         }
-    },
-    playready: async (req, res) => {
-        try {
+    }, onError: (err, req, res, target) => {
+        console.log(err);
+        res.writeHead(500, {
+            'Content-Type': 'text/plain',
+        });
+        res.end();
+    }
+};
 
-        } catch (error) {
-            console.error(error);
-            res.status(500).send('Internal Server Error');
-        }
-    },
+const Middlewares = {
+    fairplayProxy: createProxyMiddleware({
+        target: config.FAIRPLAY_LS_URL,
+        secure: false, ignorePath: true, changeOrigin: true, ...ProxyHelpers
+    }),
 
+    playreadyProxy: createProxyMiddleware({
+        target: config.PLAYREADY_LS_URL,
+        secure: false, ignorePath: true, changeOrigin: true, ...ProxyHelpers
+    }),
 
-    widevine: createProxyMiddleware({
-        target: config.,
-        secure: false, ignorePath: true, changeOrigin: true, onProxyRes: (proxyRes, req, res) => {
-            console.log(res.status);
-        }, on: {
-            proxyRes: responseInterceptor(async (responseBuffer, proxyRes, req, res) => {
-                // log original request and proxied request info
-                const exchange = `[DEBUG] ${req.method} ${req.path} -> ${proxyRes.req.protocol}//${proxyRes.req.host}${proxyRes.req.path} [${proxyRes.statusCode}]`;
-                console.log(exchange); // [DEBUG] GET / -> http://www.example.com [200]
-
-                // log complete response
-                const response = responseBuffer.toString('utf8');
-                console.log(response); // log response body
-
-                return responseBuffer;
-            })
-
-        }
+    widevineProxy: createProxyMiddleware({
+        target: config.WIDEVINE_LS_URL,
+        secure: false, ignorePath: true, changeOrigin: true, ...ProxyHelpers
     }),
     setTokenHeader: async (req, res, next) => {
-
         const videoId = req.params.id;
-
-        // add validation logic
-
         console.log(videoId);
         const targetVideo = await CatalogService.getVideoById(videoId);
-
-
 
         if (targetVideo) {
             // The video with the specified id was found
@@ -61,11 +47,10 @@ const Controller = {
         } else {
             // No video with the specified id was found
             console.log('Video not found');
+            res.sendStatus(500);
         }
 
-
         const token = await EntitlementService.getToken(targetVideo);
-
 
         req.headers['X-AxDRM-Message'] = token;
         next();
@@ -73,4 +58,4 @@ const Controller = {
     }
 };
 
-module.exports = Controller;
+module.exports = Middlewares;

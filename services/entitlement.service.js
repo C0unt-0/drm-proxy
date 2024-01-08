@@ -1,27 +1,24 @@
-const express = require('express');
-const router = express.Router();
-const secretManagement = require('../utils/config');
 const jwt = require('jsonwebtoken');
 const moment = require('moment');
+const config = require('../utils/config');
 
 const NO_SUCH_VIDEO_STATUS_CODE = 400;
 const NEED_TO_KNOW_SECRETS_STATUS_CODE = 500;
 
 const EntitlementService = {
     getToken: async (video) => {
-        const secrets = secretManagement.getSecrets();
-        const communicationKeyAsBuffer = Buffer.from(secrets.communicationKey, 'base64');
+        const communicationKeyAsBuffer = Buffer.from(config.COMMUNICATION_KEY, 'base64');
 
         // We allow this token to be used within plus or minus 24 hours.
         const now = moment();
-        const validFrom = now.clone().subtract(1, 'days');
+
         const validTo = now.clone().add(1, 'days');
 
         const message = {
             type: 'entitlement_message',
             version: 2,
             license: {
-                start_datetime: validFrom.toISOString(),
+
                 expiration_datetime: validTo.toISOString(),
                 allow_persistence: true,
             },
@@ -33,6 +30,7 @@ const EntitlementService = {
                     name: 'Policy A',
                 },
             ],
+            license_server: { return_license_request_info: true }
         };
 
         video.keys.forEach(function(key) {
@@ -48,7 +46,7 @@ const EntitlementService = {
 
         const envelope = {
             version: 1,
-            com_key_id: secrets.communicationKeyId,
+            com_key_id: config.COMMUNICATION_KEY_ID,
             message,
 
             expiration_date: validTo.toISOString(),
@@ -63,7 +61,6 @@ const EntitlementService = {
         });
 
         return licenseToken;
-
     },
 };
 

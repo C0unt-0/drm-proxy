@@ -38,14 +38,14 @@
 
 				//multi-key
 				const id = '3af89f70-7b5e-4ece-b12a-87d550661b5a'
-				let url = `http://127.0.0.1:3000/widevine/${id}`
 				const manifestUri =
 					'https://855a9fc3487ea8637e749dd9.blob.core.windows.net/video-output/6AF6FsgTSeyjQqQdoBp2pt/dash/manifest.mpd'
 
 				player.configure({
 					drm: {
 						servers: {
-							'com.widevine.alpha': url,
+							'com.widevine.alpha': `http://127.0.0.1:3000/widevine/${id}`,
+							'com.microsoft.playready': `http://127.0.0.1:3000/playready/${id}`,
 						},
 					},
 				})
