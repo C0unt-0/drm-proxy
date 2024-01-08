@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const controller = require('./controller');
+const controller = require('./middlewares');
 
 
 router.post('/fairplay', controller.fairplay);

@@ -1,22 +1,7 @@
 const EntitlementService = require('./services/entitlement.service.js');
 const CatalogService = require('./services/catalog.service.js');
 const { createProxyMiddleware, responseInterceptor } = require('http-proxy-middleware');
-var proxy = require('express-http-proxy');
 
-
-
-
-const axios = require('axios');
-const https = require('https');
-
-
-const { request } = require('express');
-
-const instance = axios.create({
-    httpsAgent: new https.Agent({
-        rejectUnauthorized: false
-    })
-});
 
 
 const Controller = {
@@ -38,10 +23,10 @@ const Controller = {
             res.status(500).send('Internal Server Error');
         }
     },
-    // widevine: proxy('https://enbsdchmndarf.x.pipedream.net',),
+
 
     widevine: createProxyMiddleware({
-        target: "https://drm-widevine-licensing.axprod.net/AcquireLicense",
+        target: config.,
         secure: false, ignorePath: true, changeOrigin: true, onProxyRes: (proxyRes, req, res) => {
             console.log(res.status);
         }, on: {
