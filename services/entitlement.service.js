@@ -9,9 +9,7 @@ const EntitlementService = {
     getToken: async (video) => {
         const communicationKeyAsBuffer = Buffer.from(config.COMMUNICATION_KEY, 'base64');
 
-        // We allow this token to be used within plus or minus 24 hours.
         const now = moment();
-
         const validTo = now.clone().add(1, 'days');
 
         const message = {

@@ -10,6 +10,7 @@ const ProxyHelpers = {
             res.sendStatus(500);
         } else {
             console.log(proxyRes.headers['x-axdrm-message']);
+            //The License Request Info Message is only for consumption by the proxy. This should not be returned to the end-user.
             delete proxyRes.headers['x-axdrm-message'];
         }
     }, onError: (err, req, res, target) => {
